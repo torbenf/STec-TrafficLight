@@ -31,7 +31,7 @@ The traffic light logic is based on 4 states:<br>
 	- void rest();
 
 The states change according to this graph:
-![flowchart](/doc/addition_files/flowchart.png)
+![flowchart](https://github.com/torbenf/STec-TrafficLight/blob/master/doc/additional_files/flowchart.png)
 
 
 # How to use

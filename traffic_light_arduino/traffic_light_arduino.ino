@@ -1,135 +1,78 @@
-typedef unsigned int Set;
-typedef enum {STATE_NO_STATE = 0, STATE_YELLOW_BLINK = 1, STATE_NORMAL_CYCLE = 2, STATE_PAUSE = 4, STATE_REST = 8} State;
-Set state = STATE_YELLOW_BLINK;
+typedef unsigned int State;
+typedef enum {STATE_NO_STATE = 0, STATE_YELLOW_BLINK = 1, STATE_NORMAL_CYCLE = 2, STATE_PAUSE = 3, STATE_REST = 4} States;
+State state = STATE_YELLOW_BLINK;
+int numOfStates = 5;
 
-// constants won't change. Used here to set the pin numbers:
-const int led_green_pin = 7;
-const int led_yellow_pin = 8;
-const int led_red_pin = 9;
+int led_green_pin = 7;
+int led_yellow_pin = 8;
+int led_red_pin = 9;
 
-const int button_pin = 2;
+const int YELLOW_BLINK_DELAY = 500;
+const int NORMAL_CYCLE_TIME = 10000; //3s green; 3s yellow; 3s red; 1s red/yellow
 
-// Variables will change:
-//led states to set the LEDs
-int led_green_state = LOW;
-int led_yellow_state = LOW;
-int led_red_state = LOW;
+int button_pin = 2;
+int button_state_current = 1;
+int button_state_previous = 0;
+unsigned long last_button_press = 0;
 
-volatile int last_button_state = HIGH;
+unsigned long yellow_blink_on = 0;
+unsigned long yellow_blink_off = 0;
 
-// Generally, you should use "unsigned long" for variables that hold time
-// The value will quickly become too large for an int to store
-unsigned long previousMillis = 0;        // will store last time LED was updated
-
-volatile boolean interrupted = false;
-volatile long last_interrupt = 0;
-const int interrupt_delay = 200;
-
-// constants won't change:
-const long interval = 1000;           // interval at which to blink (milliseconds)
-
-//sets the global state variable to the desired state
-Set change_state(State new_state) {
-  /*
-    Serial.print("Old State was: ");
-    Serial.println(state, BIN);
-  */
-  Set my_state = new_state;
-  /*
-    Serial.print("New State is: ");
-    Serial.println(new_state, BIN);
-  */
-  return my_state;
+void activateLEDs(int green, int yellow, int red){
+  digitalWrite(led_green_pin, green);
+  digitalWrite(led_yellow_pin, yellow);
+  digitalWrite(led_red_pin, red);
 }
 
-void set_interrupt() {
-  unsigned long interrupt_time = millis();
-  unsigned long held = 0;
-  Serial.println("Starting to count");
-  if (interrupt_time - last_interrupt >= interrupt_delay) {
-    last_interrupt = interrupt_time;
-    interrupted = true;
-    while (digitalRead(button_pin) == HIGH && held < 20) {
-      delay(50);
-      Serial.print("...");
-      held++;
-    }
-    if (held < 10) {
-      Serial.println("short");
-      if (state & STATE_PAUSE) {
-        interrupted = false;
-      } else {}
-    } else {
-      Serial.println("long");
-      state = change_state(STATE_YELLOW_BLINK);
-    }
-  }
-  int button_state = digitalRead(button_pin);
-  last_button_state = button_state;
-}
-
-//pauses the normal cycle until button is pressed again
-void pause() {
-  Serial.println("PAUSE");
-  state = change_state(STATE_PAUSE);
-  while (interrupted) {
-  }
-  interrupted = false;
-  state = change_state(STATE_NORMAL_CYCLE);
-}
-
-//normal traffic light cycle:
-//red, red/yellow, green, yellow, red
-void normal_cycle() {
-  if (!interrupted) {
-    digitalWrite(led_red_pin, LOW);
-    digitalWrite(led_yellow_pin, LOW);
-    digitalWrite(led_green_pin, LOW);
-
-    digitalWrite(led_red_pin, HIGH);
-    delay(1000);
-    pause();
-    digitalWrite(led_yellow_pin, HIGH);
-    delay(1000);
-    pause();
-    digitalWrite(led_red_pin, LOW);
-    digitalWrite(led_yellow_pin, LOW);
-    digitalWrite(led_green_pin, HIGH);
-    delay(1000);
-    pause();
-    digitalWrite(led_green_pin, LOW);
-    digitalWrite(led_yellow_pin, HIGH);
-    delay(1000);
-    pause();
-    digitalWrite(led_yellow_pin, LOW);
-    pause();
-    digitalWrite(led_red_pin, HIGH);
-    delay(1000);
-  } else {
-    interrupted = false;
-  }
-  Serial.println("Done");
-
-}
-
-void yellow_blink(int interval) {
-  while (!interrupted) {
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= interval) {
-      // save the last time you blinked the LED
-      previousMillis = currentMillis;
-      if (led_yellow_state == LOW) {
-        led_yellow_state = HIGH;
-      } else {
-        led_yellow_state = LOW;
+void doSomething(int _state){
+  Serial.println("Choosing");
+  unsigned long theTime = millis();
+  switch(_state){       
+   case STATE_YELLOW_BLINK:
+      Serial.println("YELLOW_BLINK");
+      digitalWrite(led_green_pin, LOW);
+      digitalWrite(led_red_pin, LOW);
+      if(!digitalRead(led_yellow_pin)){
+        if(theTime - yellow_blink_off > YELLOW_BLINK_DELAY){
+          digitalWrite(led_yellow_pin, HIGH);
+          yellow_blink_on = millis();
+        }
+      }else{
+        if(theTime - yellow_blink_on > YELLOW_BLINK_DELAY){
+          digitalWrite(led_yellow_pin, LOW);
+          yellow_blink_off = millis();
+        }
       }
-      digitalWrite(led_yellow_pin, led_yellow_state);
-    }
+      break;
+    case STATE_NORMAL_CYCLE:
+      Serial.println("NORMAL_CYLCE");
+      
+      int time_frame = theTime % NORMAL_CYCLE_TIME;
+           
+      if(0 <= time_frame && time_frame <= (NORMAL_CYCLE_TIME/10)*3){ //red phase
+        activateLEDs(0,0,1);
+       
+      }else if((NORMAL_CYCLE_TIME/10)*3 < time_frame && time_frame <= (NORMAL_CYCLE_TIME/10)*4){ // red yellow phase
+        activateLEDs(0,1,1);
+
+      }else if((NORMAL_CYCLE_TIME/10)*4 < time_frame && time_frame <= (NORMAL_CYCLE_TIME/10)*7){ //green phase
+        activateLEDs(1,0,0);
+        
+      }else if((NORMAL_CYCLE_TIME/10)*7 < time_frame && time_frame <= NORMAL_CYCLE_TIME){ // yellow
+        activateLEDs(0,1,0);
+      }
+     break;  
+   case STATE_PAUSE:
+      int green_led = digitalRead(led_green_pin);
+      int yellow_led = digitalRead(led_yellow_pin);
+      int red_led = digitalRead(led_red_pin);
+
+      activateLEDs(green_led, yellow_led, red_led);
+
+   default:
+    digitalWrite(led_yellow_pin, LOW);
+    Serial.println("DEFAULT");
   }
-  interrupted = false;
-  led_yellow_state = LOW;
-  state = change_state(STATE_NORMAL_CYCLE);
-  Serial.println("Done");
 }
 
 void setup() {
@@ -137,23 +80,27 @@ void setup() {
   pinMode(led_green_pin, OUTPUT);
   pinMode(led_yellow_pin, OUTPUT);
   pinMode(led_red_pin, OUTPUT);
-
-  //set button_pin as input and sets internal pullup resisitor
-  pinMode(button_pin, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(button_pin), set_interrupt, FALLING);
+  
+  // put your setup code here, to run once:
   Serial.begin(9600);
+  pinMode(button_pin, INPUT_PULLUP);
+
 }
 
 void loop() {
-  Serial.println("Choosing state");
-  if (state & STATE_YELLOW_BLINK) {
-    Serial.println("state YELLOW BLINK");
-    yellow_blink(1000);
-  } else if (state & STATE_NORMAL_CYCLE) {
-    Serial.println("state NORMAL_CYLCE");
-    normal_cycle();
-  } else if (state & STATE_PAUSE) {
-    Serial.println("state PAUSE");
-    pause();
+  // put your main code here, to run repeatedly:
+  button_state_current = digitalRead(button_pin);
+  if(button_state_current == LOW){
+      if(button_state_previous == 1){
+        button_state_previous = 0;
+        state++;
+        state = state % numOfStates;
+        last_button_press = millis();
+      }
+  }else{
+    button_state_previous = 1;
   }
+  Serial.print("My state is: ");
+  Serial.println(state);
+  doSomething(state);
 }

@@ -40,8 +40,11 @@ The states change according to this graph:<br><br>
 	git clone https://github.com/torbenf/STec-TrafficLight.git
 	```
   - Copy the library folder into the Arduino library directory to use it inside the Arduino IDE.
-  - Connect the three LEDs and the pushbutton to an ardunio of your choice. This is an example wiring diagram:
-  ![wiring](https://github.com/torbenf/STec-TrafficLight/blob/master/doc/additional_files/flowchart.png)
+  - Connect the three LEDs and the pushbutton to an ardunio of your choice. This is an example wiring diagram:<br>
+  ![wiring](https://github.com/torbenf/STec-TrafficLight/blob/master/doc/additional_files/wiring_diagram.PNG)
+  <br>
+  	- The LEDs are connected to Pin 7 (green), 8 (yellow) and 9 (red)
+	- The button is connected to Pin 2 with an *INTERNAL PULLUP RESISTOR*
   
   
 

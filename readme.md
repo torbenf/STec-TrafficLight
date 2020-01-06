@@ -45,7 +45,9 @@ The states change according to this graph:<br><br>
   	- The LEDs are connected to Pin 7 (green), 8 (yellow) and 9 (red)
   	- The button is connected to Pin 2 with an *INTERNAL PULLUP RESISTOR*
   <br>
+  
   ![wiring](https://github.com/torbenf/STec-TrafficLight/blob/master/doc/additional_files/wiring_diagram.PNG)
+  
   <br>
   	
   

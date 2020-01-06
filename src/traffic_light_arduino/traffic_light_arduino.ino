@@ -30,12 +30,6 @@ boolean longPressActive = false;
 unsigned long yellow_blink_on = 0;
 unsigned long yellow_blink_off = 0;
 
-void activateLEDs(bool green, bool yellow, bool red) {
-  digitalWrite(led_green_pin, green);
-  digitalWrite(led_yellow_pin, yellow);
-  digitalWrite(led_red_pin, red);
-}
-
 void yellowBlink(){
   trafficlight.setGreen(0);
   trafficlight.setRed(0);

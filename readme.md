@@ -38,10 +38,12 @@ The states change according to this graph:<br><br>
   - Clone the repository
 	```bash
 	git clone https://github.com/torbenf/STec-TrafficLight.git
-	cd GPGKeychainAccess
 	```
   - Copy the library folder into the Arduino library directory to use it inside the Arduino IDE.
-  - Connect the three LEDs and the pushbutton to an ardunio of your choice.
+  - Connect the three LEDs and the pushbutton to an ardunio of your choice. This is an example wiring diagram:
+  ![wiring](https://github.com/torbenf/STec-TrafficLight/blob/master/doc/additional_files/flowchart.png)
+  
+  
 
   - By constructing a trafficlight instance in a scetch you define the pins used for the LEDs and the button:<br>
 [green_LED, yellow_LED, red_LED, button_pin] --> see traffic_light_arduino scetch inside src

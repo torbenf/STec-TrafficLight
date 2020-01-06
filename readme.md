@@ -6,7 +6,6 @@ With the right hardware (3 LEDs and a pushbutton) it can simulate a traffic ligh
 Copy the library folder into the Arduino library directory to use it inside the Arduino IDE.
 Connect the three LEDs and the pushbutton to an ardunio of your choice.
 
-By constructing a trafficlight instance in a scetch you define the pins used for the LEDs and the button:
-  [green_LED, yellow_LED, red_LED, button_pin]
+By constructing a trafficlight instance in a scetch you define the pins used for the LEDs and the button:  [green_LED, yellow_LED, red_LED, button_pin]
 Inside 
 

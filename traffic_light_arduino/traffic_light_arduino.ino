@@ -12,66 +12,72 @@ const int NORMAL_CYCLE_TIME = 10000; //3s green; 3s yellow; 3s red; 1s red/yello
 
 int button_pin = 2;
 int button_state_current = 1;
-int button_state_previous = 0;
 unsigned long last_button_press = 0;
+unsigned long buttonTimer = 0;
+unsigned long longPressTime = 1000;
+
+boolean buttonActive = false;
+boolean longPressActive = false;
 
 unsigned long yellow_blink_on = 0;
 unsigned long yellow_blink_off = 0;
 
-void activateLEDs(int green, int yellow, int red){
+void activateLEDs(int green, int yellow, int red) {
   digitalWrite(led_green_pin, green);
   digitalWrite(led_yellow_pin, yellow);
   digitalWrite(led_red_pin, red);
 }
 
-void doSomething(int _state){
-  Serial.println("Choosing");
+void doSomething(int _state) {
+  //Serial.println("Choosing");
   unsigned long theTime = millis();
-  switch(_state){       
-   case STATE_YELLOW_BLINK:
-      Serial.println("YELLOW_BLINK");
+  switch (_state) {
+    case STATE_NO_STATE:
+      ;
+    case STATE_YELLOW_BLINK:
+      //Serial.println("YELLOW_BLINK");
       digitalWrite(led_green_pin, LOW);
       digitalWrite(led_red_pin, LOW);
-      if(!digitalRead(led_yellow_pin)){
-        if(theTime - yellow_blink_off > YELLOW_BLINK_DELAY){
+      if (!digitalRead(led_yellow_pin)) {
+        if (theTime - yellow_blink_off > YELLOW_BLINK_DELAY) {
           digitalWrite(led_yellow_pin, HIGH);
           yellow_blink_on = millis();
         }
-      }else{
-        if(theTime - yellow_blink_on > YELLOW_BLINK_DELAY){
+      } else {
+        if (theTime - yellow_blink_on > YELLOW_BLINK_DELAY) {
           digitalWrite(led_yellow_pin, LOW);
           yellow_blink_off = millis();
         }
       }
       break;
     case STATE_NORMAL_CYCLE:
-      Serial.println("NORMAL_CYLCE");
-      
-      int time_frame = theTime % NORMAL_CYCLE_TIME;
-           
-      if(0 <= time_frame && time_frame <= (NORMAL_CYCLE_TIME/10)*3){ //red phase
-        activateLEDs(0,0,1);
-       
-      }else if((NORMAL_CYCLE_TIME/10)*3 < time_frame && time_frame <= (NORMAL_CYCLE_TIME/10)*4){ // red yellow phase
-        activateLEDs(0,1,1);
+      //Serial.println("NORMAL_CYLCE");
 
-      }else if((NORMAL_CYCLE_TIME/10)*4 < time_frame && time_frame <= (NORMAL_CYCLE_TIME/10)*7){ //green phase
-        activateLEDs(1,0,0);
-        
-      }else if((NORMAL_CYCLE_TIME/10)*7 < time_frame && time_frame <= NORMAL_CYCLE_TIME){ // yellow
-        activateLEDs(0,1,0);
+      int time_frame = theTime % NORMAL_CYCLE_TIME;
+
+      if (0 <= time_frame && time_frame <= (NORMAL_CYCLE_TIME / 10) * 3) { //red phase
+        activateLEDs(0, 0, 1);
+
+      } else if ((NORMAL_CYCLE_TIME / 10) * 3 < time_frame && time_frame <= (NORMAL_CYCLE_TIME / 10) * 4) { // red yellow phase
+        activateLEDs(0, 1, 1);
+
+      } else if ((NORMAL_CYCLE_TIME / 10) * 4 < time_frame && time_frame <= (NORMAL_CYCLE_TIME / 10) * 7) { //green phase
+        activateLEDs(1, 0, 0);
+
+      } else if ((NORMAL_CYCLE_TIME / 10) * 7 < time_frame && time_frame <= NORMAL_CYCLE_TIME) { // yellow
+        activateLEDs(0, 1, 0);
       }
-     break;  
-   case STATE_PAUSE:
+      break;
+    case STATE_PAUSE:
       int green_led = digitalRead(led_green_pin);
       int yellow_led = digitalRead(led_yellow_pin);
       int red_led = digitalRead(led_red_pin);
 
       activateLEDs(green_led, yellow_led, red_led);
 
-   default:
-    digitalWrite(led_yellow_pin, LOW);
-    Serial.println("DEFAULT");
+    default:
+      digitalWrite(led_yellow_pin, LOW);
+      //Serial.println("DEFAULT");
   }
 }
 
@@ -80,27 +86,43 @@ void setup() {
   pinMode(led_green_pin, OUTPUT);
   pinMode(led_yellow_pin, OUTPUT);
   pinMode(led_red_pin, OUTPUT);
-  
+
   // put your setup code here, to run once:
   Serial.begin(9600);
   pinMode(button_pin, INPUT_PULLUP);
-
+  last_button_press = millis();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   button_state_current = digitalRead(button_pin);
-  if(button_state_current == LOW){
-      if(button_state_previous == 1){
-        button_state_previous = 0;
+  if (button_state_current == LOW && ((millis() - last_button_press) > 1000)) {
+    if (buttonActive == false) {
+      buttonActive = true;
+      buttonTimer = millis();
+    }
+    if ((millis() - buttonTimer > longPressTime) && (longPressActive == false)) {
+      //long press detected
+      longPressActive = true;
+      last_button_press = millis();
+      Serial.println("long press detected");
+      state = STATE_YELLOW_BLINK;
+    }
+
+  } else {
+    if (buttonActive == true) {
+      if (longPressActive == true) {
+        longPressActive = false;
+      } else {
+        //short press detected
         state++;
         state = state % numOfStates;
         last_button_press = millis();
+        Serial.println("short press detected");
+        Serial.println(state);
       }
-  }else{
-    button_state_previous = 1;
+      buttonActive = false;
+    }
   }
-  Serial.print("My state is: ");
-  Serial.println(state);
   doSomething(state);
 }

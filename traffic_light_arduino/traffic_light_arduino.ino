@@ -10,6 +10,8 @@ int led_red_pin = 9;
 const int YELLOW_BLINK_DELAY = 500;
 const int NORMAL_CYCLE_TIME = 10000; //3s green; 3s yellow; 3s red; 1s red/yellow
 
+const int REST_AFTER = 5000;
+
 int button_pin = 2;
 int button_state_current = 1;
 unsigned long last_button_press = 0;
@@ -32,8 +34,9 @@ void doSomething(int _state) {
   //Serial.println("Choosing");
   unsigned long theTime = millis();
   switch (_state) {
-    case STATE_NO_STATE:
-      ;
+    case STATE_REST:
+      activateLEDs(0,0,0);
+      break;
     case STATE_YELLOW_BLINK:
       //Serial.println("YELLOW_BLINK");
       digitalWrite(led_green_pin, LOW);
@@ -115,14 +118,29 @@ void loop() {
         longPressActive = false;
       } else {
         //short press detected
-        state++;
-        state = state % numOfStates;
+        switch(state){
+          case STATE_YELLOW_BLINK:
+            state = STATE_NORMAL_CYCLE;
+            break;
+          case STATE_NORMAL_CYCLE:
+            state = STATE_PAUSE;
+            break;
+          case STATE_PAUSE:
+            state = STATE_NORMAL_CYCLE;
+            break;
+          case STATE_REST:
+            state = STATE_YELLOW_BLINK;
+            break;
+        }
         last_button_press = millis();
         Serial.println("short press detected");
         Serial.println(state);
       }
       buttonActive = false;
     }
+  }
+  if((millis() - last_button_press) > REST_AFTER){
+    state = STATE_REST;
   }
   doSomething(state);
 }

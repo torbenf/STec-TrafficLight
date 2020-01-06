@@ -30,7 +30,7 @@ The traffic light logic is based on 4 states:<br>
 	- void pause();
 	- void rest();
 
-The states change according to this graph:
+The states change according to this graph:<br>
 ![flowchart](https://github.com/torbenf/STec-TrafficLight/blob/master/doc/additional_files/flowchart.png)
 
 

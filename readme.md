@@ -36,7 +36,10 @@ The states change according to this graph:<br><br>
 
 # How to use
   - Clone the repository
-  > https://github.com/torbenf/STec-TrafficLight.git
+	```bash
+	git clone https://github.com/torbenf/STec-TrafficLight.git
+	cd GPGKeychainAccess
+	```
   - Copy the library folder into the Arduino library directory to use it inside the Arduino IDE.
   - Connect the three LEDs and the pushbutton to an ardunio of your choice.
 

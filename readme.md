@@ -1,4 +1,4 @@
-# TrafficLight
+# TrafficLight :vertical_traffic_light: 	
 TrafficLight is a project for learing how to structure a software assigment. It consists of arduino source code, the trafficLight library and the documentation.
 With the right hardware (3 LEDs and a pushbutton) it can simulate a traffic light.
 

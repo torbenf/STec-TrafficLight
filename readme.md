@@ -54,7 +54,7 @@ The states change according to this graph:<br><br>
   
 
   - By constructing a trafficlight instance in a scetch you define the pins used for the LEDs and the button:<br>
-[green_LED, yellow_LED, red_LED, button_pin] --> see traffic_light_arduino scetch inside src
+TrafficLight trafficlight([green_LED], [yellow_LED], [red_LED], [button_pin]) <br>--> see traffic_light_arduino scetch inside src
 
 
 

@@ -6,22 +6,7 @@ With the right hardware (3 LEDs and a pushbutton) it can simulate a traffic ligh
 # Functionality
 The user can set all LEDs and the cycle- , timeout-, and blinkdelaytime. It is also possible to get all states from all PINs via the lib.<br>
 
-- Traffic light hardware operations inside the libraray:
-	- void setTimeoutAfter(long millis);
-	- void setBlinkDelay(long millis);
-	- void setCycleLength(long millis);
-	- long getTimeout();
-	- long getBlinkDelay();
-	- long getCycleLength();
-	- void setLEDs(bool green, bool yellow, bool red);
-	- void setGreen(bool state);
-	- void setYellow(bool state);
-	- void setRed(bool state);
-	- bool getGreenState();
-	- bool getYellowState();
-	- bool getRedState();
-	- bool getButtonState();
-  
+- Traffic light hardware operations are outsourced in the librarayy  
   
 The traffic light logic is based on 4 states:<br>
 - Traffic light logic inside traffic_light_arduino scetch:

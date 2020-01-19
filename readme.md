@@ -33,12 +33,11 @@ The states change according to this graph:<br><br>
   ![wiring](https://github.com/torbenf/STec-TrafficLight/blob/master/doc/additional_files/wiring_diagram.PNG)
   
   <br>
-  	
   
-  
-
   - By constructing a trafficlight instance in a scetch you define the pins used for the LEDs and the button:<br>
 TrafficLight trafficlight([green_LED], [yellow_LED], [red_LED], [button_pin]) <br>--> see traffic_light_arduino scetch inside src
+
+  ENJOY! :green_heart:
 
 
 

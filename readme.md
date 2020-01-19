@@ -9,11 +9,10 @@ The user can set all LEDs and the cycle- , timeout-, and blinkdelaytime. It is a
 - Traffic light hardware operations are outsourced in the librarayy  
   
 The traffic light logic is based on 4 states:<br>
-- Traffic light logic inside traffic_light_arduino scetch:
-	- void yellowBlink();
-	- void normalCycle(unsigned long startTime);
-	- void pause();
-	- void rest();
+- Yellow blinking
+- Normal cycle
+- Pause
+- Rest
 
 The states change according to this graph:<br><br>
 ![flowchart](https://github.com/torbenf/STec-TrafficLight/blob/master/doc/additional_files/flowchart.png)

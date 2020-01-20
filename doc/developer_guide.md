@@ -4,7 +4,7 @@ The user can set all LEDs and the cycle- , timeout-, and blinkdelaytime. It is a
 
 The Library supports the folowing functions:
 
-| Function                                          | Dedcription   | 
+| Function                                          | Description   | 
 | --------------------------------------------------|:-------------:|
 | void setTimeoutAfter(long millis)                 | Sets the time in millis after which the traffic light turns off without interaction. |
 | void setBlinkDelay(long millis)                   | Sets the delay when blinking yellow in millis    |
